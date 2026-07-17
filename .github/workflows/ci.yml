@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - name: Check server.js syntax
+        run: node -c server.js
+      - name: Check config files are valid JSON
+        run: |
+          for f in config/*.json examples/*.json; do
+            echo "Checking $f..."
+            node -e "JSON.parse(require('fs').readFileSync('$f', 'utf8'))"
+          done
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Start server on port 8889
+        env:
+          OPENAI_API_KEY: test-key-for-ci
+        run: |
+          node -e "
+            const fs = require('fs');
+            const config = JSON.parse(fs.readFileSync('config/default.json', 'utf8'));
+            config.port = 8889;
+            config.host = '0.0.0.0';
+            fs.writeFileSync('test-config.json', JSON.stringify(config, null, 2));
+          "
+          node server.js --config test-config.json &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          sleep 3
+      - name: Check server is running
+        run: |
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "Server failed to start"
+            exit 1
+          fi
+      - name: Test status endpoint
+        run: |
+          STATUS=$(curl -s http://127.0.0.1:8889/gateway-status)
+          echo "$STATUS"
+          if ! echo "$STATUS" | grep -q '"status"'; then
+            echo "Status endpoint returned invalid response"
+            exit 1
+          fi
+      - name: Test health endpoint (should be 404 for non-status paths without real API)
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8889/v1/chat/completions)
+          echo "HTTP code: $HTTP_CODE"
+          # Should return 5xx (bad gateway) because no real API key
+          if [[ $HTTP_CODE -lt 500 ]]; then
+            echo "Expected 5xx status code, got $HTTP_CODE"
+            exit 1
+          fi
+      - name: Cleanup
+        if: always()
+        run: |
+          kill $SERVER_PID 2>/dev/null || true
