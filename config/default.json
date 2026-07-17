@@ -1,0 +1,22 @@
+{
+  "port": 8888,
+  "host": "127.0.0.1",
+  "providers": {
+    "zai": {
+      "baseUrl": "https://api.z.ai",
+      "basePath": "/api/coding/paas/v4",
+      "apiKeyEnv": "ZAI_API_KEY",
+      "models": {
+        "glm-5.2": { "max": 10, "name": "GLM-5.2 (Flagship)" },
+        "glm-5.1": { "max": 10, "name": "GLM-5.1 (Best)" },
+        "glm-5": { "max": 2, "name": "GLM-5 (Best)" },
+        "glm-4.7": { "max": 2, "name": "GLM-4.7 (Excellent)" },
+        "glm-4.6": { "max": 3, "name": "GLM-4.6 (Great)" },
+        "glm-4.5": { "max": 10, "name": "GLM-4.5 (Good)" }
+      }
+    }
+  },
+  "fallbackTimeoutMs": 120000,
+  "primaryModel": "glm-5.1",
+  "fallbackModels": ["glm-5.2", "glm-5", "glm-4.7", "glm-4.6", "glm-4.5"]
+}

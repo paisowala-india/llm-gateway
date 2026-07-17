@@ -1,0 +1,28 @@
+{
+  "port": 8888,
+  "host": "127.0.0.1",
+  "providers": {
+    "openai": {
+      "baseUrl": "https://api.openai.com",
+      "basePath": "/v1",
+      "apiKeyEnv": "OPENAI_API_KEY",
+      "models": {
+        "gpt-4o": { "max": 5, "name": "GPT-4o" },
+        "gpt-4o-mini": { "max": 30, "name": "GPT-4o Mini" }
+      }
+    },
+    "anthropic": {
+      "baseUrl": "https://api.anthropic.com",
+      "basePath": "/v1",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-3-5-sonnet-20241022": { "max": 5, "name": "Claude 3.5 Sonnet" },
+        "claude-3-opus-20240229": { "max": 2, "name": "Claude 3 Opus" },
+        "claude-3-haiku-20240307": { "max": 20, "name": "Claude 3 Haiku" }
+      }
+    }
+  },
+  "fallbackTimeoutMs": 60000,
+  "primaryModel": "gpt-4o",
+  "fallbackModels": ["gpt-4o-mini", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229", "claude-3-haiku-20240307"]
+}

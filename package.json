@@ -1,0 +1,41 @@
+{
+  "name": "llm-gateway",
+  "version": "1.0.0",
+  "description": "Lightweight LLM gateway with automatic fallback, rate limiting, and multi-provider routing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "status": "curl -s http://127.0.0.1:8888/gateway-status | jq '.'",
+    "logs": "tail -f logs/proxy.log"
+  },
+  "keywords": [
+    "llm",
+    "gateway",
+    "proxy",
+    "router",
+    "openai",
+    "anthropic",
+    "claude",
+    "rate-limit",
+    "fallback",
+    "multi-provider",
+    "ai",
+    "gpt",
+    "api-gateway",
+    "load-balancer",
+    "retry"
+  ],
+  "author": "Bhashkaranand Joshi",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhashkaranand/llm-gateway"
+  },
+  "homepage": "https://github.com/bhashkaranand/llm-gateway#readme",
+  "bugs": {
+    "url": "https://github.com/bhashkaranand/llm-gateway/issues"
+  }
+}
